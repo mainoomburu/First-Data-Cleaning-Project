@@ -13,8 +13,8 @@ insert layoffs_staging
 select*
 from layoffs;
 
--- now we check for duplicate data in our table --
--- we will use and implement a row number to give each unique row a number --
+-- The first step in data cleaning is checking for duplicates and removing duplicates from our table --
+-- we will use and implement a window function row number to give each unique row a number --
 select*,
 row_number() over(partition by company, location, industry, total_laid_off, percentage_laid_off, `date`, stage, country, funds_raised_millions) as row_namba
 from layoffs_staging;
