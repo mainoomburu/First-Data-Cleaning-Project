@@ -56,3 +56,78 @@ where row_namba > 1;
 delete
 from layoffs_staging_update
 where row_namba > 1;
+
+-- Standardizing data --
+-- Finding issues in your data and fixing it --
+-- In this stage, we run, column by column looking for issues within the table --
+select*
+from layoffs_staging_update;
+
+-- Company column --
+select distinct company
+from layoffs_staging_update;
+
+select company, trim(company)
+from layoffs_staging_update;
+
+update layoffs_staging_update
+set company = trim(company);
+
+-- location column --
+select distinct location
+from layoffs_staging_update
+order by 1;
+
+-- industry column --
+select distinct industry
+from layoffs_staging_update
+order by 1;
+
+select*
+from layoffs_staging_update
+where industry like 'crypto%';
+
+update layoffs_staging_update
+set industry = 'Crypto'
+where industry like 'Crypto%';
+
+select distinct industry
+from layoffs_staging_update
+order by 1;
+
+select*
+from layoffs_staging_update
+where industry = '';
+
+-- Country column --
+select distinct country
+from layoffs_staging_update
+order by 1;
+
+select distinct country
+from layoffs_staging_update
+where country like 'United States%';
+
+update layoffs_staging_update
+set country = 'United States'
+where country like 'United States%';
+
+-- Date column --
+-- In this column we change it from a text data type to date --
+select `date`,
+str_to_date(`date`, '%m/%d/%Y')
+from layoffs_staging_update;
+
+update layoffs_staging_update
+set `date` = str_to_date(`date`, '%m/%d/%Y');
+
+-- We can now change our date column to date data type --
+alter table layoffs_staging_update
+modify column `date` date;
+
+select*
+from layoffs_staging_update;
+
+-- Now we drop our row number column --
+alter table layoffs_staging_update
+drop column row_namba;
