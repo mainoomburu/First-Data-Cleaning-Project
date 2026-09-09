@@ -95,6 +95,7 @@ select distinct industry
 from layoffs_staging_update
 order by 1;
 
+-- We only note this for now as the next step after standardizing is working on the blank and null values --
 select*
 from layoffs_staging_update
 where industry = '';
