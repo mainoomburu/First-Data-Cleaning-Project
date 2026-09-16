@@ -197,5 +197,6 @@ from layoffs_staging_update
 where total_laid_off is null
 and percentage_laid_off is null;
 
+-- Now we check if the changes have been effected to our table --
 select*
 from layoffs_staging_update;
