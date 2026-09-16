@@ -132,3 +132,70 @@ from layoffs_staging_update;
 -- Now we drop our row number column --
 alter table layoffs_staging_update
 drop column row_namba;
+
+-- REMOVING NULLS --
+-- in our industry column, there were some rows with missing values --
+select distinct industry
+from layoffs_staging_update
+where industry is null
+or industry = '';
+
+-- next we check these rows --
+-- we check each returned row's value seperately to see if there might have been an ommission of data --
+select *
+from layoffs_staging_update
+where industry is null
+or industry = '';
+
+select*
+from layoffs_staging_update
+where company = 'Airbnb';
+
+select*
+from layoffs_staging_update
+where company like '%Interactive';
+
+select*
+from layoffs_staging_update
+where company = 'Carvana';
+
+select*
+from layoffs_staging_update
+where company = 'Juul';
+
+-- so we use a self join to try and populate these blanks --
+-- so first we set the blank rows to null
+update layoffs_staging_update
+set industry = null
+where industry = '';
+
+select A.industry, B.industry
+from layoffs_staging_update as A
+join layoffs_staging_update as B
+	on A.company = B.company
+    and A.location = B.location
+where (A.industry is null or A.industry = '')
+and B.industry is not null;
+
+update layoffs_staging_update as A
+join layoffs_staging_update as B
+	on A.company = B.company
+    and A.location = B.location
+set A.industry = B.industry
+where (A.industry is null or A.industry = '')
+and B.industry is not null;
+
+-- next we remove the null values --
+select *
+from layoffs_staging_update
+where total_laid_off is null
+and percentage_laid_off is null;
+
+-- since we do not have the total values to be able to populate these columns, we remove them as we can not use this data in our exploratory data analysis --
+delete
+from layoffs_staging_update
+where total_laid_off is null
+and percentage_laid_off is null;
+
+select*
+from layoffs_staging_update;
