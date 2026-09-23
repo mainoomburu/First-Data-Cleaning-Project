@@ -200,3 +200,66 @@ and percentage_laid_off is null;
 -- Now we check if the changes have been effected to our table --
 select*
 from layoffs_staging_update;
+
+-- Exploring our data
+
+select*
+from layoffs_staging_update;
+
+-- we first try to see the maximum number of total laid off employees by a company
+select max(total_laid_off), max(percentage_laid_off)
+from layoffs_staging_update;
+
+-- next we try to check which companies laid off the most people
+-- in this case if a company had a percentage laid off of 1, that means it laid off everybody even if we do not have the total laid off value
+select*
+from layoffs_staging_update
+where percentage_laid_off = 1;
+
+-- this allows us to order our table to identify which company went under with the most total laid off
+select*
+from layoffs_staging_update
+where percentage_laid_off = 1
+order by total_laid_off desc;
+
+-- this allows us to identify which company had raised the most amount of money but still went under
+select*
+from layoffs_staging_update
+where percentage_laid_off = 1
+order by funds_raised_millions desc;
+
+-- now we try to understand which company laid off more people across the dataset
+select company, sum(total_laid_off) as sum_of_total_laid_off
+from layoffs_staging_update
+group by company
+order by sum_of_total_laid_off desc;
+
+-- now we try to understand the date range of our data
+select min(`date`), max(`date`)
+from layoffs_staging_update;
+
+-- we now check which industry had the most laid off
+select industry, sum(total_laid_off) as sum_total_laid_off
+from layoffs_staging_update
+group by industry
+order by sum_total_laid_off desc;
+
+-- we try to check which country had the most laid off
+select country, sum(total_laid_off) as sum_total_laid_off
+from layoffs_staging_update
+group by country
+order by sum_total_laid_off desc;
+
+-- we check which stage had the most laid off
+select stage, sum(total_laid_off) as sum_total_laid_off
+from layoffs_staging_update
+group by stage
+order by sum_total_laid_off desc;
+
+-- we now try to understand which year had the highest laid off 
+select year(`date`) as years, sum(total_laid_off) as sum_total_laid_off
+from layoffs_staging_update
+group by year(`date`)
+order by years desc;
+
+-- we now try to understand the progression of lay offs
