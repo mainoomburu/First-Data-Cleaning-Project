@@ -106,3 +106,60 @@ select year(`date`) as years, company, sum(funds_raised_millions) as total_funds
 from layoffs_staging_update
 group by years, company
 order by total_funds desc;
+
+-- now we will use CTEs to explore the data deeper
+-- in this instance, we try to understand and see the total laid off across the months in a year
+-- we want each year to show how many laid off occured in each month
+-- so first we try to extract the month
+select substring(`date`, 6,2) as `Month`
+from layoffs_staging_update;
+
+-- next that we know positionally the value of month
+select substring(`date`, 1,7) as `Month`
+from layoffs_staging_update;
+
+-- we sort the number of laid offs from the beginning of our data set to the end 
+select substring(`date`, 1,7) as `Month`, sum(total_laid_off) as total_off
+from layoffs_staging_update
+where substring(`date`, 1,7) is not null
+group by `Month`
+order by `Month` asc;
+
+-- but still we would love to understand how the lay offs progressed as the months went by
+-- to do this, we use a common table expression
+with rolling_total as 
+(
+select substring(`date`, 1,7) as `Month`, sum(total_laid_off) as total_off
+from layoffs_staging_update
+where substring(`date`, 1,7) is not null
+group by `Month`
+order by `Month` asc
+)
+select `Month`, total_off, sum(total_off) over(order by `Month`) as roll_total
+from rolling_total;
+
+-- now we try to understand the total laid off for companies by year
+
+select company, year(`date`) as years, sum(total_laid_off) as total_laid
+from layoffs_staging_update
+where year(`date`) is not null
+group by company, years
+order by company;
+
+-- we now try to rank which companies laid off more employees across the years by showing the top 5 companies that laid off employees year by year
+with yearly_layoffs as
+(
+select company, year(`date`) as years, sum(total_laid_off) as total_laid
+from layoffs_staging_update
+where year(`date`) is not null
+group by company, years
+),
+yearly_ranking_layoff as
+(
+select*, 
+dense_rank() over(partition by years order by total_laid desc) as ranking
+from yearly_layoffs
+)
+select*
+from yearly_ranking_layoff
+where ranking <= 5;
