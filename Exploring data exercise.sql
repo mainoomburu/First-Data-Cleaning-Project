@@ -163,3 +163,50 @@ from yearly_layoffs
 select*
 from yearly_ranking_layoff
 where ranking <= 5;
+
+-- country layoffs
+-- before creating a CTE its best practice to first run the function you want to place inside your CTE
+select country, year(`date`) as years, sum(total_laid_off) as total_laid_off
+from layoffs_staging_update
+group by country, years
+order by country;
+
+with country_layoffs as
+(
+select country, year(`date`) as years, sum(total_laid_off) as total_laid_off
+from layoffs_staging_update
+where year(`date`) is not null
+group by country, years
+),
+country_ranking as
+(
+select*,
+dense_rank() over(partition by years order by total_laid_off desc) as ranking
+from country_layoffs
+)
+select*
+from country_ranking
+where ranking <= 5;
+
+-- total funds raised by country
+select country, year(`date`) as years, sum(funds_raised_millions) as total_cash
+from layoffs_staging_update
+group by country, years
+order by country;
+
+with country_layoffs as
+(
+select country, year(`date`) as years, sum(funds_raised_millions) as total_cash
+from layoffs_staging_update
+where year(`date`) is not null
+group by country, years
+),
+country_ranking as
+(
+select*,
+dense_rank() over(partition by years order by total_cash desc) as ranking
+from country_layoffs
+)
+select*
+from country_ranking
+where ranking <= 5;
