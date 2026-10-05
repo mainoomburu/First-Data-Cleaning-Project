@@ -263,3 +263,4 @@ group by year(`date`)
 order by years desc;
 
 -- we now try to understand the progression of lay offs
+-- Check the next file for better exploration of the data (Exploring data exercise)
