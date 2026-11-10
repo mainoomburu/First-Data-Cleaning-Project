@@ -15,3 +15,9 @@ Setting a hierarchy or an order for the different conditions is really valuable.
 the relationship between conditions or variables too late which may affect the output or how the output is displayed.
 
 I'm eager to learn more and see how much more this process will help me in the long run.
+
+
+
+On 10th November, I have come to this new and recent discovery. 
+While working on queries that extract valuable data from big data, It is very valuable if you save these results into newly
+created tables to help future analysts to understand what we were trying to solve.
